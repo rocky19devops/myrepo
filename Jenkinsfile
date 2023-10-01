@@ -18,15 +18,21 @@ pipeline {
                 sh "docker build -t rocky19devops/myrepo:${BUILD_NUMBER} ."
                 }
         }
-        
+
         stage('Push Code') {
-            steps {
-                // withCredentials([usernamePassword(credentialsId: 'rockydockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                withCredentials([string(credentialsId: 'dockerHubUser', variable: 'dockerHubUser')]) {
-                echo 'Pushing image to Docker Repository..............'
-                sh "docker push rocky19devops/myrepo:${BUILD_NUMBER}"
-                }
+          environment {
+            DOCKER_IMAGE = "rocky19devops/myrepo:${BUILD_NUMBER}"
+            REGISTRY_CREDENTIALS = credentials('rockydockerhub')
+          }
+          steps {
+            script {
+              def dockerImage = docker.image("${DOCKER_IMAGE}")
+              docker.withRegistry('https://index.docker.io/v1/', "rockydockerhub") {
+                dockerImage.push()
+
+              }
             }
+          }
         }
 
         stage('Run') {
@@ -37,4 +43,3 @@ pipeline {
         }
     }
 }
-
