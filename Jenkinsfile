@@ -22,7 +22,7 @@ pipeline {
         stage('Push Code') {
             steps {
                 // withCredentials([usernamePassword(credentialsId: 'rockydockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                withCredentials([string(credentialsId: 'dockerHubUser')]) {
+                withCredentials([string(credentialsId: 'dockerHubUser' variable: 'dockerHubUser')]) {
                 echo 'Pushing image to Docker Repository..............'
                 sh "docker push rocky19devops/myrepo:${BUILD_NUMBER}"
                 }
