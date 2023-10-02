@@ -40,6 +40,12 @@ pipeline {
                 sh "docker run --name rockyapp${BUILD_NUMBER} rocky19devops/rockyapp:${BUILD_NUMBER}"
             }
         }
+
+        stage('Validate') {
+            steps {
+                echo 'Validate the application............'
+                sh "curl -v http://$(hostname -i):9090"
+            }
+        }
     }
 }
-
