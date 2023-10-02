@@ -1,14 +1,9 @@
 pipeline {
-  agent {
-    docker {
-      image 'docker:latest'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
-    }
-  }
-  environment {
-    IMAGE_TAG = "${BUILD_NUMBER}"
-    HOME = "${env.WORKSPACE}"
-  } 
+    agent any
+      environment {
+        IMAGE_TAG = "${BUILD_NUMBER}"
+                HOME = "${env.WORKSPACE}"
+      }
     stages {
         stage('Checkout') {
             steps {
@@ -20,13 +15,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the Docker Image..............'
-                sh "docker build -t rocky19devops/myrepo:${BUILD_NUMBER} ."
+                sh "cd rockyapp && docker build -t rocky19devops/rockyapp:${BUILD_NUMBER} ."
                 }
         }
 
         stage('Push Code') {
           environment {
-            DOCKER_IMAGE = "rocky19devops/myrepo:${BUILD_NUMBER}"
+            DOCKER_IMAGE = "rocky19devops/rockyapp:${BUILD_NUMBER}"
             REGISTRY_CREDENTIALS = credentials('rockydockerhub')
           }
             steps {
@@ -39,12 +34,36 @@ pipeline {
             }
         }
 
-        stage('Run') {
+        stage('Deploy K8s') {
+          environment {
+            GIT_REPO_NAME = "myrepo"
+            GIT_USER_NAME = "rocky19devops"
+          }
             steps {
-                echo 'Run the docker application............'
-                sh "docker run --name rockyapp${BUILD_NUMBER} rocky19devops/myrepo:${BUILD_NUMBER}"
+                git branch: 'main', url: 'https://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git'
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                    echo Deploy application in k8's environment ...............
+                    git config user.email "rajesh19.soft@gmail.com"
+                    git config user.name "Rajesh Kumar Ramesh"
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    ls -ltrh
+                    git status
+                    sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" kube/deployment.yml
+                    git status
+                    git add kube/deployment.yml -v
+                    git status
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}" -v
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                '''
+            }
+        }
+
+        stage('Validate') {
+            steps {
+                echo 'Validate the application............'
+                sh "curl -v http://`hostname -i`:9090"
             }
         }
     }
 }
-
