@@ -44,7 +44,7 @@ pipeline {
         stage('Validate') {
             steps {
                 echo 'Validate the application............'
-                sh "curl -v http://$(hostname -i):9090"
+                sh "curl -v http://`hostname -i`:9090"
             }
         }
     }
