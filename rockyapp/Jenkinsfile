@@ -34,10 +34,28 @@ pipeline {
             }
         }
 
-        stage('Run') {
+        stage('Deploy K8s') {
+          environment {
+            GIT_REPO_NAME = "myrepo"
+            GIT_USER_NAME = "rocky19devops"
+          }
             steps {
-                echo 'Run the docker application............'
-                sh "docker run -d -p 9090:9090 --name rockyapp${BUILD_NUMBER} rocky19devops/rockyapp:${BUILD_NUMBER}"
+                git branch: 'main', url: 'https://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git'
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                    echo Deploy application in k8's environment ...............
+                    git config user.email "rajesh19.soft@gmail.com"
+                    git config user.name "Rajesh Kumar Ramesh"
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    ls -ltrh
+                    git status
+                    sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" kube/deployment.yml
+                    git status
+                    git add kube/deployment.yml -v
+                    git status
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}" -v
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                '''
             }
         }
 
