@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: rockynewapp
+  name: rockynewapp
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: rockynewapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rockynewapp
+    spec:
+      containers:
+      - image: rocky19devops/rockyapp:4
+        name: rockyapp
+        resources: {}
+status: {}
