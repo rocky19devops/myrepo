@@ -43,7 +43,7 @@ pipeline {
                 git branch: 'main', url: "https://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git"
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh '''
-                    echo Deploy application in k8's environment ...............
+                    echo Deploy application in k8s environment ...............
                     git config user.email "rajesh19.soft@gmail.com"
                     git config user.name "Rajesh Kumar Ramesh"
                     BUILD_NUMBER=${BUILD_NUMBER}
