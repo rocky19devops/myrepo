@@ -53,7 +53,7 @@ pipeline {
                     pwd
                     sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" Deployment.yaml
                     git status
-                    git add Deployment.yml -v
+                    git add Deployment.yaml -v
                     git status
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}" -v
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
