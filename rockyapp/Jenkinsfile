@@ -36,7 +36,7 @@ pipeline {
 
         stage('Deploy K8s') {
           environment {
-            GIT_REPO_NAME = "myrepo"
+            GIT_REPO_NAME = "argocd"
             GIT_USER_NAME = "rocky19devops"
           }
             steps {
