@@ -51,7 +51,7 @@ pipeline {
                     git status
                     cd kube
                     pwd
-                    sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" Deployment.yml
+                    sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" Deployment.yaml
                     git status
                     git add Deployment.yml -v
                     git status
