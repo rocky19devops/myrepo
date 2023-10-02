@@ -37,7 +37,7 @@ pipeline {
         stage('Run') {
             steps {
                 echo 'Run the docker application............'
-                sh "docker run --name rockyapp${BUILD_NUMBER} rocky19devops/rockyapp:${BUILD_NUMBER}"
+                sh "docker run -d -p 9090:9090 --name rockyapp${BUILD_NUMBER} rocky19devops/rockyapp:${BUILD_NUMBER}"
             }
         }
 
