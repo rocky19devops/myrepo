@@ -49,9 +49,11 @@ pipeline {
                     BUILD_NUMBER=${BUILD_NUMBER}
                     ls -ltrh
                     git status
-                    sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" kube/Deployment.yml
+                    cd kube
+                    pwd
+                    sed -i -r "s/rockyapp(.+)/rockyapp:${BUILD_NUMBER}/g" Deployment.yml
                     git status
-                    git add kube/Deployment.yml -v
+                    git add Deployment.yml -v
                     git status
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}" -v
                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
