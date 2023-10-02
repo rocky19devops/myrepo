@@ -40,7 +40,7 @@ pipeline {
             GIT_USER_NAME = "rocky19devops"
           }
             steps {
-                git branch: 'main', url: 'https://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git'
+                git branch: 'main', url: "https://github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git"
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh '''
                     echo Deploy application in k8's environment ...............
